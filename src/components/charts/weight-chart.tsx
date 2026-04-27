@@ -21,13 +21,29 @@ export default function WeightChart({
 }: {
   data: Point[];
 }) {
+  const values = data
+    .flatMap((p) => [p.y, p.goal ?? null])
+    .filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+  const min = values.length ? Math.min(...values) : 0;
+  const max = values.length ? Math.max(...values) : 0;
+  const range = max - min;
+  const pad = Math.max(range * 0.12, 0.5);
+  const domain: [number, number] = [min - pad, max + pad];
+
   return (
     <div className="h-64 rounded-[22px] bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(253,242,248,0.5))] p-3">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f5d0e6" vertical={false} />
           <XAxis dataKey="x" tick={{ fontSize: 12, fill: "#94a3b8" }} tickLine={false} axisLine={false} minTickGap={24} />
-          <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} tickLine={false} axisLine={false} width={40} />
+          <YAxis
+            domain={domain}
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={false}
+            axisLine={false}
+            width={44}
+            tickFormatter={(v) => Number(v).toFixed(1)}
+          />
           <Tooltip
             contentStyle={{
               borderRadius: 16,

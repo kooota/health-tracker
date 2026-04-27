@@ -16,6 +16,15 @@ type Point = {
 };
 
 export default function BodyFatChart({ data }: { data: Point[] }) {
+  const values = data
+    .map((p) => p.y)
+    .filter((v) => typeof v === "number" && Number.isFinite(v));
+  const min = values.length ? Math.min(...values) : 0;
+  const max = values.length ? Math.max(...values) : 0;
+  const range = max - min;
+  const pad = Math.max(range * 0.12, 0.5);
+  const domain: [number, number] = [min - pad, max + pad];
+
   return (
     <div className="h-64 rounded-[22px] bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(236,253,245,0.45))] p-3">
       <ResponsiveContainer width="100%" height="100%">
@@ -29,10 +38,12 @@ export default function BodyFatChart({ data }: { data: Point[] }) {
             minTickGap={24}
           />
           <YAxis
+            domain={domain}
             tick={{ fontSize: 12, fill: "#94a3b8" }}
             tickLine={false}
             axisLine={false}
-            width={40}
+            width={44}
+            tickFormatter={(v) => `${Number(v).toFixed(1)}`}
           />
           <Tooltip
             contentStyle={{
