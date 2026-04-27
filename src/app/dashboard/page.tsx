@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import LogoutButton from "@/components/logout-button";
 import { getHealthPlanetConnection, getCurrentGoal, getLatestWeight, getSeriesSince } from "@/lib/dashboard/queries";
 import WeightChart from "@/components/charts/weight-chart";
-import StepsChart from "@/components/charts/steps-chart";
+import BodyFatChart from "@/components/charts/body-fat-chart";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -54,19 +54,12 @@ export default async function DashboardPage() {
       goal: targetWeight,
     }));
 
-  const stepsByDay = new Map<string, number>();
-  for (const p of series) {
-    if (p.metricType !== "steps") continue;
-    const day = p.measurementDay ?? new Date(p.measuredAt).toISOString().slice(0, 10);
-    stepsByDay.set(day, (stepsByDay.get(day) ?? 0) + p.value);
-  }
-  const stepsPoints = Array.from(stepsByDay.entries())
-    .sort((a, b) => (a[0] < b[0] ? -1 : 1))
-    .map(([day, steps], idx, arr) => {
-      const window = arr.slice(Math.max(0, idx - 6), idx + 1);
-      const ma7 = window.length === 7 ? window.reduce((s, [, v]) => s + v, 0) / 7 : null;
-      return { x: day.slice(5), steps, ma7 };
-    });
+  const bodyFatPoints = series
+    .filter((p) => p.metricType === "body_fat")
+    .map((p) => ({
+      x: new Date(p.measuredAt).toISOString().slice(5, 10),
+      y: p.value,
+    }));
 
   return (
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
@@ -79,7 +72,7 @@ export default async function DashboardPage() {
             ダッシュボード
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            体重・体脂肪率・歩数（Health Planet）
+            体重・体脂肪率（Health Planet）
           </p>
         </div>
 
@@ -154,13 +147,13 @@ export default async function DashboardPage() {
           </div>
         </div>
         <div className="rounded-[28px] border border-white/70 bg-white/82 p-5 shadow-[0_20px_60px_rgba(148,163,184,0.12)] backdrop-blur">
-          <div className="text-sm font-semibold text-slate-700">歩数</div>
-          <div className="mt-2 text-sm text-slate-500">日別 + 7日移動平均</div>
+          <div className="text-sm font-semibold text-slate-700">体脂肪率</div>
+          <div className="mt-2 text-sm text-slate-500">直近約120日</div>
           <div className="mt-4">
-            {stepsPoints.length > 0 ? (
-              <StepsChart data={stepsPoints} />
+            {bodyFatPoints.length > 0 ? (
+              <BodyFatChart data={bodyFatPoints} />
             ) : (
-              <div className="mt-6 grid h-56 place-items-center rounded-[22px] bg-sky-50/70 text-sm text-slate-500">
+              <div className="mt-6 grid h-56 place-items-center rounded-[22px] bg-emerald-50/70 text-sm text-slate-500">
                 データがありません（同期してください）
               </div>
             )}
