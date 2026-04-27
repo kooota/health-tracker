@@ -53,36 +53,36 @@ export default function GoalForm({
       className="mt-4 grid gap-3 sm:grid-cols-3"
     >
       <label className="block">
-        <div className="text-sm font-medium">開始日</div>
+        <div className="text-sm font-medium text-slate-600">開始日</div>
         <input
           name="startDate"
           type="date"
           defaultValue={initialGoal?.startDate ?? ""}
-          className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 outline-none ring-emerald-500 focus:ring-2"
+          className="mt-1 w-full rounded-2xl border border-rose-100 bg-white/90 px-4 py-3 outline-none focus:border-sky-200 focus:bg-white focus:shadow-[0_0_0_4px_rgba(191,219,254,0.35)]"
           required
         />
       </label>
 
       <label className="block">
-        <div className="text-sm font-medium">期限</div>
+        <div className="text-sm font-medium text-slate-600">期限</div>
         <input
           name="targetDate"
           type="date"
           defaultValue={initialGoal?.targetDate ?? ""}
-          className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 outline-none ring-emerald-500 focus:ring-2"
+          className="mt-1 w-full rounded-2xl border border-rose-100 bg-white/90 px-4 py-3 outline-none focus:border-sky-200 focus:bg-white focus:shadow-[0_0_0_4px_rgba(191,219,254,0.35)]"
           required
         />
       </label>
 
       <label className="block">
-        <div className="text-sm font-medium">目標体重(kg)</div>
+        <div className="text-sm font-medium text-slate-600">目標体重(kg)</div>
         <input
           name="targetWeight"
           type="number"
           inputMode="decimal"
           step="0.1"
           defaultValue={initialGoal?.targetWeight ?? ""}
-          className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 outline-none ring-emerald-500 focus:ring-2"
+          className="mt-1 w-full rounded-2xl border border-rose-100 bg-white/90 px-4 py-3 outline-none focus:border-sky-200 focus:bg-white focus:shadow-[0_0_0_4px_rgba(191,219,254,0.35)]"
           required
         />
       </label>
@@ -91,11 +91,11 @@ export default function GoalForm({
         <button
           type="submit"
           disabled={status === "saving"}
-          className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
+          className="rounded-full bg-[linear-gradient(135deg,#f9a8d4_0%,#93c5fd_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(147,197,253,0.28)] hover:-translate-y-0.5 hover:brightness-105 disabled:translate-y-0 disabled:opacity-60"
         >
           {status === "saving" ? "保存中..." : "保存"}
         </button>
-        <div className="text-xs text-zinc-500">
+        <div className="text-xs text-slate-500">
           開始時体重は、保存時点の最新体重をスナップショットします。
           {latestWeight ? (
             <>
@@ -107,17 +107,16 @@ export default function GoalForm({
       </div>
 
       {status === "ok" ? (
-        <div className="sm:col-span-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+        <div className="sm:col-span-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
           保存しました（画面を更新すると反映されます）
         </div>
       ) : null}
 
       {status === "error" ? (
-        <div className="sm:col-span-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="sm:col-span-3 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">
           {error}
         </div>
       ) : null}
     </form>
   );
 }
-

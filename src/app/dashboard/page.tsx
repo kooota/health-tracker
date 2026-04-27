@@ -15,7 +15,9 @@ export default async function DashboardPage() {
   const connectionId = conn?.id ?? null;
   const latestWeight = connectionId ? await getLatestWeight(connectionId) : null;
 
-  const since = new Date(Date.now() - 120 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const since = new Date(now);
+  since.setDate(since.getDate() - 120);
   const series = connectionId ? await getSeriesSince(connectionId, since) : [];
 
   const currentWeight = latestWeight?.value ?? null;
@@ -27,10 +29,9 @@ export default async function DashboardPage() {
   const diffFromStart =
     currentWeight != null && startWeight != null ? currentWeight - startWeight : null;
 
-  const today = new Date();
   const remainingDays =
     goal?.targetDate
-      ? Math.ceil((new Date(goal.targetDate).getTime() - today.getTime()) / (24 * 60 * 60 * 1000))
+      ? Math.ceil((new Date(goal.targetDate).getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
       : null;
 
   const remainingWeeks =
@@ -71,10 +72,13 @@ export default async function DashboardPage() {
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <div className="inline-flex rounded-full border border-sky-100 bg-white/75 px-3 py-1 text-xs font-medium text-sky-500 shadow-sm">
+            Daily Overview
+          </div>
+          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-700">
             ダッシュボード
           </h1>
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-slate-500">
             体重・体脂肪率・歩数（Health Planet）
           </p>
         </div>
@@ -82,7 +86,7 @@ export default async function DashboardPage() {
         <div className="flex items-center gap-2">
           <a
             href="/settings"
-            className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
+            className="rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-sm font-medium text-sky-600 shadow-sm shadow-sky-100/70 hover:-translate-y-0.5 hover:bg-sky-50"
           >
             設定
           </a>
@@ -125,38 +129,38 @@ export default async function DashboardPage() {
         ].map((c) => (
           <div
             key={c.title}
-            className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm"
+            className="rounded-[26px] border border-white/70 bg-white/80 p-5 shadow-[0_16px_48px_rgba(148,163,184,0.12)] backdrop-blur"
           >
-            <div className="text-sm text-zinc-600">{c.title}</div>
-            <div className="mt-2 text-xl font-semibold">{c.value}</div>
+            <div className="text-sm font-medium text-slate-500">{c.title}</div>
+            <div className="mt-3 text-xl font-semibold text-slate-700">{c.value}</div>
           </div>
         ))}
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <div className="text-sm font-medium">体重</div>
-          <div className="mt-2 text-sm text-zinc-600">
+        <div className="rounded-[28px] border border-white/70 bg-white/82 p-5 shadow-[0_20px_60px_rgba(148,163,184,0.12)] backdrop-blur">
+          <div className="text-sm font-semibold text-slate-700">体重</div>
+          <div className="mt-2 text-sm text-slate-500">
             {connectionId ? "直近約120日" : "未連携（設定で連携してください）"}
           </div>
           <div className="mt-4">
             {weightPoints.length > 0 ? (
               <WeightChart data={weightPoints} />
             ) : (
-              <div className="mt-6 h-56 rounded-xl bg-zinc-50 grid place-items-center text-sm text-zinc-500">
+              <div className="mt-6 grid h-56 place-items-center rounded-[22px] bg-rose-50/70 text-sm text-slate-500">
                 データがありません（同期してください）
               </div>
             )}
           </div>
         </div>
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <div className="text-sm font-medium">歩数</div>
-          <div className="mt-2 text-sm text-zinc-600">日別 + 7日移動平均</div>
+        <div className="rounded-[28px] border border-white/70 bg-white/82 p-5 shadow-[0_20px_60px_rgba(148,163,184,0.12)] backdrop-blur">
+          <div className="text-sm font-semibold text-slate-700">歩数</div>
+          <div className="mt-2 text-sm text-slate-500">日別 + 7日移動平均</div>
           <div className="mt-4">
             {stepsPoints.length > 0 ? (
               <StepsChart data={stepsPoints} />
             ) : (
-              <div className="mt-6 h-56 rounded-xl bg-zinc-50 grid place-items-center text-sm text-zinc-500">
+              <div className="mt-6 grid h-56 place-items-center rounded-[22px] bg-sky-50/70 text-sm text-slate-500">
                 データがありません（同期してください）
               </div>
             )}
@@ -166,4 +170,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-

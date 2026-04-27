@@ -7,7 +7,7 @@ import {
 import { decryptSecret } from "@/lib/crypto";
 import { addMonthsUtc, formatYmdHmsForHealthPlanet } from "@/lib/datetime";
 import { fetchInnerscan, fetchPedometer } from "@/lib/healthplanet";
-import { and, eq, gte } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 type Trigger = "manual" | "cron";
 
@@ -152,7 +152,7 @@ export async function runHealthPlanetSync(trigger: Trigger) {
 
         // Only advance lastSuccessfulSyncAt if all windows succeed
         newLastSuccessfulSyncAt = to;
-      } catch (e) {
+      } catch {
         partialFailure = true;
         // do not advance cursor; next run will retry from original start
         break;
