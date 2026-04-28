@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ManualSyncButton({ disabled }: { disabled?: boolean }) {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -16,8 +18,20 @@ export default function ManualSyncButton({ disabled }: { disabled?: boolean }) {
       setPending(false);
       return;
     }
-    setMessage("同期を開始しました（反映は少し待ってから更新してください）");
+    let imported = 0;
+    try {
+      const j = JSON.parse(text) as { recordsImported?: number; status?: string };
+      if (typeof j.recordsImported === "number") imported = j.recordsImported;
+    } catch {
+      /* empty */
+    }
+    setMessage(
+      imported > 0
+        ? `同期が完了しました（取り込み ${imported} 件）`
+        : "同期が完了しました（新しいデータはありませんでした）",
+    );
     setPending(false);
+    router.refresh();
   }
 
   return (

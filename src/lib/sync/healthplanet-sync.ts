@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm";
 type Trigger = "manual" | "cron";
 
 function parseHpDateToUtc(dateStr: string) {
-  // Examples: yyyyMMddHHmmss or yyyyMMddHHmm
+  // Examples: yyyyMMddHHmmss or yyyyMMddHHmm（仕様上は測定/登録の日時; 国内向け JST として扱う）
   const s = dateStr.trim();
   if (s.length !== 12 && s.length !== 14) {
     throw new Error(`Unexpected Health Planet date: ${s}`);
@@ -23,7 +23,10 @@ function parseHpDateToUtc(dateStr: string) {
   const HH = Number(s.slice(8, 10));
   const mm = Number(s.slice(10, 12));
   const ss = s.length === 14 ? Number(s.slice(12, 14)) : 0;
-  return new Date(Date.UTC(yyyy, MM - 1, dd, HH, mm, ss));
+  return new Date(
+    `${String(yyyy)}-${String(MM).padStart(2, "0")}-${String(dd).padStart(2, "0")}T` +
+      `${String(HH).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}+09:00`,
+  );
 }
 
 function measurementDayJst(measuredAtUtc: Date) {
